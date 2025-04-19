@@ -63,3 +63,22 @@ model YearHistory {
 
   @@id([month, year, userId])
 }
+
+model BudgetLimit {
+  id        String   @id @default(uuid())
+  userId    String
+  month     Int
+  year      Int
+  limit     Float
+
+  @@unique([userId, month, year])
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  message   String
+  createdAt DateTime @default(now())
+  type      String   // e.g. "warning", "suggestion", "reward"
+  read      Boolean  @default(false)
+}
