@@ -1,29 +1,17 @@
 "use client";
 
 import * as React from "react";
-
-import { Button } from "@/components/ui/button";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
-import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { useMediaQuery } from "@/hooks/use-media-query";
-import { Currencies, Currency } from "@/lib/currencies";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import SkeletonWrapper from "./SkeletonWrapper";
 import { UserSettings } from "@prisma/client";
-import { UpdateUserCurrency } from "@/app/wizard/_actions/userSettings";
 import { toast } from "sonner";
+import { useMediaQuery } from "hooks/use-media-query";
+import { Currencies, Currency } from "lib/currencies";
+import { UpdateUserCurrency } from "app/wizard/_actions/userSettings";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import { Button } from "./ui/button";
+import { Drawer, DrawerContent, DrawerTrigger } from "./ui/drawer";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "./ui/command";
 
 export function CurrencyComboBox() {
   const [open, setOpen] = React.useState(false);

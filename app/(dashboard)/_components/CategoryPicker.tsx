@@ -1,26 +1,15 @@
 "use client";
 
-import CreateCategoryDialog from "@/app/(dashboard)/_components/CreateCategoryDialog";
-import { Button } from "@/components/ui/button";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { TransactionType } from "@/lib/types";
-import { cn } from "@/lib/utils";
+import CreateCategoryDialog from "./CreateCategoryDialog";
 import { Category } from "@prisma/client";
 import { useQuery } from "@tanstack/react-query";
+import { Button } from "components/ui/button";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "components/ui/command";
+import { Popover, PopoverContent, PopoverTrigger } from "components/ui/popover";
+import { TransactionType } from "lib/types";
 import { Check, ChevronsUpDown } from "lucide-react";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect } from "react";
+import { cn } from "lib/utils";
 
 interface Props {
   type: TransactionType;

@@ -9,9 +9,8 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url = env("POSTGRES_PRISMA_URL")
-  directUrl = env("POSTGRES_URL_NON_POOLING")
+  provider   = "sqlite"
+  url        = "file:./dev.db"
 }
 
 model UserSettings {
@@ -31,16 +30,15 @@ model Category {
 model Transaction {
   id          String    @id @default(uuid())
   createdAt   DateTime  @default(now())
-  updateAt    DateTime  @default(now())
+  updatedAt   DateTime  @default(now()) @updatedAt  // Corrected the name from `updateAt` to `updatedAt`
 
   amount      Float
-  description String
+  description String?   // Make the description field optional
   date        DateTime
   userId      String
   type        String    @default("income")
-
-  category      String
-  categoryIcon  String
+  category    String
+  categoryIcon String
 }
 
 model MonthHistory {
@@ -71,8 +69,17 @@ model BudgetLimit {
   year      Int
   limit     Float
 
-  @@unique([userId, month, year])
+  @@unique([userId, month, year], name: "userId_month_year")
 }
+
+model UserPoints {
+  id        String   @id @default(uuid())
+  userId    String
+  points    Int      @default(0)
+  reason    String  
+  createdAt DateTime @default(now())
+}
+
 
 model Notification {
   id        String   @id @default(uuid())

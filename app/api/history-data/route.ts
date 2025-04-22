@@ -1,7 +1,7 @@
-import prisma from "@/lib/prisma";
-import { Period, TimeFrame } from "@/lib/types";
 import { currentUser } from "@clerk/nextjs/server";
 import { getDaysInMonth } from "date-fns";
+import prisma from "lib/prisma";
+import { Period, TimeFrame } from "lib/types";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 

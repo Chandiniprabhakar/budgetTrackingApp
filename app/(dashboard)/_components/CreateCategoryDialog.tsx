@@ -1,36 +1,5 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { TransactionType } from "@/lib/types";
-import { cn } from "@/lib/utils";
-import {
-  CreateCategorySchema,
-  CreateCategorySchemaType,
-} from "@/schema/categories";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CircleOff, Loader2, PlusSquare } from "lucide-react";
 import React, { ReactNode, useCallback, useState } from "react";
@@ -38,10 +7,18 @@ import { useForm } from "react-hook-form";
 import Picker from "@emoji-mart/react";
 import data from "@emoji-mart/data";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { CreateCategory } from "@/app/(dashboard)/_actions/categories";
 import { Category } from "@prisma/client";
 import { toast } from "sonner";
 import { useTheme } from "next-themes";
+import { TransactionType } from "lib/types";
+import { CreateCategorySchema, CreateCategorySchemaType } from "schema/categories";
+import { CreateCategory } from "../_actions/categories";
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "components/ui/dialog";
+import { Button } from "components/ui/button";
+import { cn } from "lib/utils";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel } from "components/ui/form";
+import { Input } from "components/ui/input";
+import { Popover, PopoverContent, PopoverTrigger } from "components/ui/popover";
 
 interface Props {
   type: TransactionType;
@@ -132,7 +109,8 @@ function CreateCategoryDialog({ type, successCallback, trigger }: Props) {
             Categories are used to group your transactions
           </DialogDescription>
         </DialogHeader>
-        <Form {...form} onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <FormField
               control={form.control}
               name="name"
@@ -185,8 +163,8 @@ function CreateCategoryDialog({ type, successCallback, trigger }: Props) {
                         <Picker
                           data={data}
                           theme={theme.resolvedTheme}
-                          onEmojiSelect={(emoji: any) => {
-                            form.setValue("icon", emoji.native); // Use form.setValue instead
+                          onEmojiSelect={(emoji: { native: string }) => {
+                            field.onChange(emoji.native);
                           }}
                         />
                       </PopoverContent>
@@ -198,6 +176,7 @@ function CreateCategoryDialog({ type, successCallback, trigger }: Props) {
                 </FormItem>
               )}
             />
+          </form>
         </Form>
         <DialogFooter>
           <DialogClose asChild>

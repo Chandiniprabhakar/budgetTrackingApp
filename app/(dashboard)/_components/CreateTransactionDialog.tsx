@@ -1,49 +1,24 @@
 "use client";
 
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { TransactionType } from "@/lib/types";
-import { cn } from "@/lib/utils";
-import {
-  CreateTransactionSchema,
-  CreateTransactionSchemaType,
-} from "@/schema/transaction";
 import { ReactNode, useCallback, useState } from "react";
-
 import React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import CategoryPicker from "@/app/(dashboard)/_components/CategoryPicker";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 import { CalendarIcon, Loader2 } from "lucide-react";
-import { Calendar } from "@/components/ui/calendar";
+import { TransactionType } from "lib/types";
+import { CreateTransactionSchema, CreateTransactionSchemaType } from "schema/transaction";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { CreateTransaction } from "@/app/(dashboard)/_actions/transactions";
 import { toast } from "sonner";
-import { DateToUTCDate } from "@/lib/helper";
+import { DateToUTCDate } from "lib/helper";
+import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "components/ui/dialog";
+import { cn } from "lib/utils";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "components/ui/form";
+import { Input } from "components/ui/input";
+import CategoryPicker from "./CategoryPicker";
+import { Popover, PopoverContent, PopoverTrigger } from "components/ui/popover";
+import { Button } from "components/ui/button";
+import { Calendar } from "components/ui/calendar";
 
 interface Props {
   trigger: ReactNode;
@@ -58,6 +33,7 @@ function CreateTransactionDialog({ trigger, type }: Props) {
       date: new Date(),
     },
   });
+
   const [open, setOpen] = useState(false);
   const handleCategoryChange = useCallback(
     (value: string) => {
@@ -69,12 +45,31 @@ function CreateTransactionDialog({ trigger, type }: Props) {
   const queryClient = useQueryClient();
 
   const { mutate, isPending } = useMutation({
-    mutationFn: CreateTransaction,
-    onSuccess: () => {
+    mutationFn: async (data: CreateTransactionSchemaType) => {
+      const res = await fetch("/api/create-transaction", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+  
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || "Failed to create transaction");
+      }
+  
+      return res.json();
+    },
+    onSuccess: (data) => {
       toast.success("Transaction created successfully 🎉", {
         id: "create-transaction",
       });
-
+    
+      if (data?.warning) {
+        toast.warning("⚠️ You’ve spent over 80% of your monthly budget!");
+      }
+    
       form.reset({
         type,
         description: "",
@@ -82,19 +77,22 @@ function CreateTransactionDialog({ trigger, type }: Props) {
         date: new Date(),
         category: undefined,
       });
-
-      // After creating a transaction, we need to invalidate the overview query which will refetch data in the homepage
+    
       queryClient.invalidateQueries({
         queryKey: ["overview"],
       });
-
+    
       setOpen((prev) => !prev);
     },
+    
   });
+  
 
   const onSubmit = useCallback(
     (values: CreateTransactionSchemaType) => {
       toast.loading("Creating transaction...", { id: "create-transaction" });
+
+      console.log("VALUES BEFORE MUTATE", values, DateToUTCDate(values.date));
 
       mutate({
         ...values,

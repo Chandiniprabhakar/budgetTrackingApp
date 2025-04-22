@@ -1,7 +1,7 @@
 "use client";
 
 import * as Dialog from "@radix-ui/react-dialog";
-import { cn } from "@/lib/utils";
+import { cn } from "lib/utils";
 import { ReactNode } from "react";
 
 interface SheetContentProps extends React.ComponentProps<typeof Dialog.Content> {

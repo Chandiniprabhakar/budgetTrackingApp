@@ -1,13 +1,13 @@
 "use client";
 
-import { MAX_DATE_RANGE_DAYS } from '@/lib/constants';
 import { UserSettings } from '@prisma/client';
 import { differenceInDays, startOfMonth } from "date-fns";
 import React, { useState } from 'react'
 import { toast } from 'sonner';
 import StatsCards from './StatsCards';
 import CategoriesStats from './CategoriesStats';
-import { DateRangePicker } from '@/components/ui/date-range-picker';
+import { DateRangePicker } from 'components/ui/date-range-picker';
+import { MAX_DATE_RANGE_DAYS } from 'lib/constants';
 
 function Overview({ userSettings }: { userSettings: UserSettings}) {
     const [dateRange, setDateRange] = useState<{ from: Date; to: Date }>({

@@ -1,14 +1,10 @@
 "use client";
 
-import HistoryPeriodSelector from "@/app/(dashboard)/_components/HistoryPeriodSelector";
-import SkeletonWrapper from "@/components/SkeletonWrapper";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { GetFormatterForCurrency } from "@/lib/helper";
-import { Period, TimeFrame } from "@/lib/types";
-import { cn } from "@/lib/utils";
 import { UserSettings } from "@prisma/client";
 import { useQuery } from "@tanstack/react-query";
+import { Card, CardContent, CardHeader, CardTitle } from "components/ui/card";
+import { GetFormatterForCurrency } from "lib/helper";
+import { Period, TimeFrame } from "lib/types";
 import React, { useCallback, useMemo, useState } from "react";
 import CountUp from "react-countup";
 import {
@@ -20,6 +16,10 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import HistoryPeriodSelector from "./HistoryPeriodSelector";
+import { Badge } from "components/ui/badge";
+import SkeletonWrapper from "components/SkeletonWrapper";
+import { cn } from "lib/utils";
 
 function History({ userSettings }: { userSettings: UserSettings }) {
   const [timeframe, setTimeframe] = useState<TimeFrame>("month");

@@ -1,13 +1,13 @@
 "use client";
 
-import { GetBalanceStatsResponseType } from '@/app/api/stats/balance/route';
-import SkeletonWrapper from '@/components/SkeletonWrapper';
-import { Card } from '@/components/ui/card';
-import { DateToUTCDate, GetFormatterForCurrency } from '@/lib/helper';
 import { UserSettings } from '@prisma/client';
 import { useQuery } from '@tanstack/react-query';
+import { GetBalanceStatsResponseType } from 'app/api/stats/balance/route';
+import SkeletonWrapper from 'components/SkeletonWrapper';
+import { Card } from 'components/ui/card';
+import { DateToUTCDate, GetFormatterForCurrency } from 'lib/helper';
 import { TrendingDown, TrendingUp, Wallet } from 'lucide-react';
-import React, { ReactNode, use, useCallback, useMemo } from 'react'
+import React, { ReactNode, useCallback, useMemo } from 'react'
 import CountUp from "react-countup";
 
 interface Props {

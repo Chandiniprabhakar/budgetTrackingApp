@@ -1,7 +1,7 @@
 "use client";
 
+import { cn } from "lib/utils";
 import * as React from "react";
-import { cn } from "@/lib/utils";
 
 interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
   variant?: "default" | "success" | "warning" | "error";
