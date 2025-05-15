@@ -1,19 +1,20 @@
-import { NextResponse } from "next/server";
-import { auth } from "@clerk/nextjs";
 import prisma from "@/lib/prisma";
 import { CreateTransactionSchema } from "@/schema/transaction";
+import { getAuth } from "@clerk/nextjs/server";
+import { Prisma } from "@prisma/client";
+import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   console.log("CREATE TRANSACTION HIT");
 
-  const { userId } = auth();
-  console.log("User ID from auth:", userId);
-
-  if (!userId) {
-    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-  }
-
   try {
+    const { userId } = getAuth(req);
+    console.log("User ID from auth:", userId);
+
+    if (!userId) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
+
     const body = await req.json();
     console.log("BODY PARSED:", body);
 
@@ -36,6 +37,8 @@ export async function POST(req: Request) {
     });
 
     let warningToast = false;
+    let spent = 0;
+    let remainingBudget = null;
 
     const budgetLimit = await prisma.budgetLimit.findUnique({
       where: {
@@ -62,8 +65,8 @@ export async function POST(req: Request) {
         },
       });
 
-      const spent = totalSpent._sum.amount || 0;
-      const remainingBudget = budgetLimit.limit - spent;
+      spent = totalSpent._sum.amount || 0;
+      remainingBudget = budgetLimit.limit - spent;
       const percentSpent = (spent / budgetLimit.limit) * 100;
 
       console.log("Spent:", spent, "Remaining:", remainingBudget, "Percent:", percentSpent);
@@ -73,11 +76,20 @@ export async function POST(req: Request) {
       }
 
       if (remainingBudget >= 0) {
+        let bonusPoints = 10;
+        const percentLeft = (remainingBudget / budgetLimit.limit) * 100;
+
+        if (percentLeft > 30) {
+          bonusPoints = 30;
+        } else if (percentLeft > 10) {
+          bonusPoints = 20;
+        }
+
         await prisma.userPoints.create({
           data: {
             userId,
-            points: 10,
-            reason: `(Demo) Stayed within budget for ${transactionDate.getMonth() + 1}/${transactionDate.getFullYear()}`,
+            points: bonusPoints,
+            reason: `(Reward) ${bonusPoints} pts: Stayed under budget in ${transactionDate.getMonth() + 1}/${transactionDate.getFullYear()}`,
           },
         });
       }
@@ -94,24 +106,23 @@ export async function POST(req: Request) {
       transaction,
       warning: warningToast,
       totalPoints: totalPoints._sum.points ?? 0,
+      remainingBudget,
     });
   } catch (error: any) {
     console.error("API ERROR:", error);
-    
-    // Check if it's a Prisma error (for database issues)
+
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
       console.error("Prisma Error Code:", error.code);
       console.error("Prisma Error Meta:", error.meta);
     }
-    
-    // Return a clearer error message
+
     return NextResponse.json(
       {
         message: "Failed to create transaction",
         error: error.message ?? error,
-        stack: error.stack, // Log the stack for more detailed trace
+        stack: error.stack,
       },
       { status: 500 }
     );
   }
-};  
+}

@@ -9,7 +9,7 @@ import { toast } from "sonner";
 
 const SetBudgetDialog = () => {
   const now = new Date();
-  const currentMonth = now.getMonth() + 1; // 0-indexed
+  const currentMonth = now.getMonth() + 1; 
   const currentYear = now.getFullYear();
 
   const [budget, setBudget] = useState("");
@@ -64,7 +64,7 @@ const SetBudgetDialog = () => {
           </p>
 
           <div className="space-y-2">
-            <Label>Budget Amount ($)</Label>
+            <Label>Budget Amount (Rs)</Label>
             <Input
               type="number"
               value={budget}
